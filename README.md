@@ -2,12 +2,10 @@
 
 <!-- PROJECT LOGO -->
 <div align="center">
-  <h3 align="center">Obstacle Course Racing Game</h3>
-  <p align="center">
-    // </p>
-    <br />
-</div>    
+ <img width="1680" height="200" alt="Banner" src="https://github.com/user-attachments/assets/7181667e-e391-430c-80f4-e71a5b2911ce" />
+</div>
 
+<br>
   <details>
     <summary>Table of Contents</summary>
     <ol>
@@ -24,8 +22,7 @@
           <li><a href="#installation">Installation</a></li>
         </ul>
       </li>
-      <li><a href="#usage">Usage</a></li>
-      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="#contributing">Contributing</a></li>
       <li><a href="#contact">Contact</a></li>
     </ol>
   </details>
@@ -65,28 +62,17 @@ Under Construction 🛠️
 
 
 
-<!-- USAGE EXAMPLES -->
-## Usage
-
-//
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ROADMAP -->
-## Roadmap
-
-//
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
 <!-- CONTRIBUTING -->
 ## Contributing
 
-//
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+Don't forget to give the project a star! Thanks again!
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -94,8 +80,10 @@ Under Construction 🛠️
 <!-- CONTACT -->
 ## Contact
 
-Sonya - snmmnva@gmail.com
+Sonya's email address: snmmnva@gmail.com
 
 Project Link: [https://github.com/slooonya/Obstacle-Course-Racing-Game](https://github.com/slooonya/Obstacle-Course-Racing-Game)
+
+<img width="1680" height="200" alt="Footer" src="https://github.com/user-attachments/assets/609cec7d-aba1-4d3e-9131-75143515efbc" />
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
