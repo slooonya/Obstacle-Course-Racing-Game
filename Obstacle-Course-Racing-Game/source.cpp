@@ -26,6 +26,16 @@ GLint numSpeedUp = 0;
 // Camera control
 GLfloat camTurn = 0;
 
+// Game stats and logic
+GLint score = 0;
+GLint lives = 3;
+bool collisionOccured = false;
+
+// Game state variables
+bool inMenu = true;
+bool isPaused = false;
+bool isGameOver = false;
+
 // NPC cars animation variables
 GLfloat carNPCcoorZ = 0.0f;
 GLfloat carNPCspeed = 0.1f;
@@ -90,21 +100,81 @@ void reshape(int width, int height) {
 //======================== Interativity ========================================
 // Keyboard interaction
 void keyboardInput(unsigned char key, int x, int y) {
-
+    if (key == 'w' || key == 'W') {                    // Acceleration
+        if (numSpeedUp < 10) {
+            numSpeedUp++;
+            carSpeed += 0.1;
+        }
+    }
+    else if ((key == 'a' || key == 'A') && !isPaused && !isGameOver && !inMenu) {  // Left turn
+        turningLeft = true;                            // Initiates car left rotation and movement
+        turningRight = false;
+    }
+    else if (key == 's' || key == 'S') {               // Braking
+        if (numSpeedUp > 1) {
+            numSpeedUp--;
+            carSpeed -= 0.1;
+        }
+    }
+    else if ((key == 'd' || key == 'D') && !isPaused && !isGameOver && !inMenu) {   // Right turn
+        turningLeft = false;                           // Initiates car right rotation and movement
+        turningRight = true;
+    }
+    else if ((key == 'p' || key == 'P') && !inMenu && !isGameOver) {  // Game pause
+        isPaused = !isPaused;
+    }
+    else if ((key == 'r' || key == 'R') && !inMenu && !isPaused && isGameOver) {
+        lives = 3;                                     // Reseting the game after its over
+        carZ = 0;
+        carX = 0;
+        score = 0;
+        numSpeedUp = 0;
+        camTurn = 0;
+        inMenu = true;
+        isGameOver = false;
+    }
+    else if (key == 'q' || key == 'Q')				   // Close the program
+        exit(0);
 }
 
 void keyboardInputRelease(unsigned char key, int x, int y) {
-
+    if (key == 'a' || key == 'A')       // Returns the car to face forward when not stirring left anymore
+        turningLeft = false;
+    else if (key == 'd' || key == 'D')  // Returns the car to face forward when not stirring right anymore
+        turningRight = false;
 }
 
 // Arrows interaction
 void specialKeys(int key, int x, int y) {
-
+    if (key == GLUT_KEY_LEFT) {  // Turning camera left
+        if (camTurn < 2.5)
+            camTurn += 0.1;
+    }
+    if (key == GLUT_KEY_RIGHT) { // Turning camera right
+        if (camTurn > -2.5)
+            camTurn -= 0.1;
+    }
 }
 
 // Mouse interaction
 void mouseInput(int button, int state, int x, int y) {
-
+    if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
+        int viewport[4];
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        y = viewport[3] - y;
+        if (x >= 390 && x <= 470 && y >= 230 && y <= 260 && inMenu) {       // Easy difficulty selection
+            carSpeed = 0.3f;
+            inMenu = false;
+        }
+        else if (x >= 390 && x <= 470 && y >= 190 && y <= 220 && inMenu) {  // Medium difficulty selection
+            carSpeed = 0.7f;
+            inMenu = false;
+        }
+        else if (x >= 390 && x <= 470 && y >= 150 && y <= 180 && inMenu) { // Hard difficulty selection
+            carSpeed = 1.0f;
+            inMenu = false;
+        }
+    }
 }
 //================================================================================
 
@@ -536,7 +606,61 @@ void display() {
 
 // Supporting function to make certain objects on screen move/change (update coordinates with the passing of time_interval)
 void update(int value) {
+    if (!isPaused && !inMenu && !isGameOver) {
 
+        //--------------- Cars animation ---------------------
+        // Car position (forward movement)
+        carZ -= carSpeed;
+        carNPCcoorZ -= carNPCspeed;
+        score += carSpeed * 10;
+
+        // Reset car's and humans' position to create a perfect loop (arcade)
+        if (carZ < -1000) {
+            carZ = 0;
+            carNPCcoorZ = 0;
+            carSpeed += 0.1;
+            // humanPosition = 0.0f;
+            lives++;
+        }
+
+        // Wheel rotation animation
+        wheelRotationAngle += -carSpeed * 10;
+        if (wheelRotationAngle > 360.0f) {
+            wheelRotationAngle -= 360.0f;
+        }
+
+        // Car turning (sideways movement)
+        if (turningLeft) {
+            carTurnAngle = -MAX_TURN_ANGLE;
+            if (carX > -MAX_CAR_X) {
+                carX -= 0.1f;
+            }
+        }
+        else if (turningRight) {
+            carTurnAngle = MAX_TURN_ANGLE;
+            if (carX < MAX_CAR_X) {
+                carX += 0.1f;
+            }
+        }
+        else {
+            if (carTurnAngle > 0) {
+                carTurnAngle -= 2.5f;
+                if (carTurnAngle < 0) {
+                    carTurnAngle = 0;
+                }
+            }
+            else if (carTurnAngle < 0) {
+                carTurnAngle += 2.5f;
+                if (carTurnAngle > 0) {
+                    carTurnAngle = 0;
+                }
+            }
+        }
+        //----------------------------------------------------
+    }
+
+    glutPostRedisplay();
+    glutTimerFunc(32, update, 1);
 }
 
 // Idle callback function (force OpenGL to redraw the current window)
