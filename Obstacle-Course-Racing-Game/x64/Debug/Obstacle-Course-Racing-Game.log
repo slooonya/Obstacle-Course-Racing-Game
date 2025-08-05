@@ -1,2 +1,8 @@
 ﻿  source.cpp
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(246,23): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(259,23): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(487,40): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(521,20): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(522,19): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Obstacle-Course-Racing-Game.vcxproj -> C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\x64\Debug\Obstacle-Course-Racing-Game.exe

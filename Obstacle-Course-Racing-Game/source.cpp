@@ -14,9 +14,21 @@ using namespace std;
 GLfloat carX = 0.0f;
 GLfloat carY = 0.0f;
 GLfloat carZ = -0.0f;
+GLfloat carTurnAngle = 0.0f;
+const GLfloat MAX_TURN_ANGLE = 5.0f;
+const GLfloat MAX_CAR_X = 4.0f;
+bool turningRight = false;
+bool turningLeft = false;
+GLfloat carSpeed = 0.0f;
+GLfloat wheelRotationAngle = 0.0f;
+GLint numSpeedUp = 0;
 
 // Camera control
 GLfloat camTurn = 0;
+
+// NPC cars animation variables
+GLfloat carNPCcoorZ = 0.0f;
+GLfloat carNPCspeed = 0.1f;
 
 // Texture variables
 vector<GLubyte*>p;
@@ -195,6 +207,15 @@ void setMaterial(GLfloat ambient[], GLfloat diffuse[], GLfloat specular[], GLflo
     glMaterialfv(GL_FRONT, GL_SHININESS, &shininess);
 }
 
+void setShinyMaterial() {
+    GLfloat ambient[] = { 0.25f, 0.25f, 0.25f, 1.0f };
+    GLfloat diffuse[] = { 0.4f, 0.4f, 0.4f, 1.0f };
+    GLfloat specular[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+    GLfloat shininess = 90.0f;
+
+    setMaterial(ambient, diffuse, specular, shininess);
+}
+
 void setMatteMaterial() {
     GLfloat ambient[] = { 0.05f, 0.05f, 0.05f, 1.0f };
     GLfloat diffuse[] = { 0.5f, 0.5f, 0.5f, 1.0f };
@@ -207,6 +228,56 @@ void setMatteMaterial() {
 
 
 //================ Generic functions to texture 3D shapes ========================
+void drawTexturedCylinder(GLuint textureID, GLfloat baseRadius, GLfloat topRadius,
+    GLfloat height, GLint slices, GLint stacks) {
+    GLUquadric* quadric = gluNewQuadric();
+    gluQuadricTexture(quadric, GL_TRUE);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    // Draw the side surface
+    gluCylinder(quadric, baseRadius, topRadius, height, slices, stacks);
+
+    // Draw the bottom base
+    glBegin(GL_TRIANGLE_FAN);
+    glTexCoord2f(0.5f, 0.5f);
+    glVertex3f(0.0f, 0.0f, 0.0f); // Center point
+    for (int i = 0; i <= slices; i++) {
+        GLfloat angle = 2.0f * 3.14 * (GLfloat)i / (GLfloat)slices;
+        GLfloat x = baseRadius * cosf(angle);
+        GLfloat y = baseRadius * sinf(angle);
+        glTexCoord2f(x * 0.5f / baseRadius + 0.5f, y * 0.5f / baseRadius + 0.5f);
+        glVertex3f(x, y, 0.0f);
+    }
+    glEnd();
+
+    // Draw top base
+    glBegin(GL_TRIANGLE_FAN);
+    glTexCoord2f(0.5f, 0.5f);
+    glVertex3f(0.0f, 0.0f, height); // Center point
+    for (int i = 0; i <= slices; i++) {
+        GLfloat angle = 2.0f * 3.14 * (GLfloat)i / (GLfloat)slices;
+        GLfloat x = topRadius * cosf(angle);
+        GLfloat y = topRadius * sinf(angle);
+        glTexCoord2f(x * 0.5f / topRadius + 0.5f, y * 0.5f / topRadius + 0.5f);
+        glVertex3f(x, y, height);
+    }
+    glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+    gluDeleteQuadric(quadric);
+}
+
+void drawTexturedSphere(GLuint textureID, GLfloat radius, GLint slices, GLint stacks) {
+    GLUquadric* quadric = gluNewQuadric();
+    gluQuadricTexture(quadric, GL_TRUE);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    gluSphere(quadric, radius, slices, stacks);
+    glDisable(GL_TEXTURE_2D);
+    gluDeleteQuadric(quadric);
+}
+
 void drawTexturedCube(GLuint textureID, GLfloat size) {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, textureID);
@@ -307,6 +378,130 @@ void drawSidewalk() { // Drawing tile by tile to avoid pixelation
 //________________________________________________________________________________
 
 
+//___________________________________ Cars _______________________________________
+void drawWheel(GLfloat x, GLfloat y, GLfloat z) {
+    glDisable(GL_LIGHTING);
+
+    glColor3f(0, 0, 0);
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+    glRotatef(wheelRotationAngle, 0.0f, 0.0f, 1.0f);
+    glutSolidTorus(0.15, 0.17, 10, 50);
+    glPopMatrix();
+
+    glEnable(GL_LIGHTING);
+}
+
+void drawCarLight(GLfloat x, GLfloat y, GLfloat z) {
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glScalef(0.15f, 0.1f, 0.1f);
+    drawTexturedCube(textures[13], 1.0f);
+    glPopMatrix();
+}
+
+void drawCar() {
+    setShinyMaterial();
+
+    glPushMatrix();
+    glRotatef(carTurnAngle, 0.0f, -1.0f, 0.0f);
+
+    // Body
+    glPushMatrix();
+    glTranslatef(0.0f, -0.7f, -3.4f);
+    glScalef(1.3f, 0.6f, 2.2f);
+    drawTexturedCube(textures[15], 0.5f);
+    glPopMatrix();
+
+    // Roof
+    glPushMatrix();
+    glTranslatef(0.0f, -0.1f, -3.6f);
+    glScalef(1.29f, 0.55f, 1.2f);
+    drawTexturedCube(textures[15], 0.5f);
+    glPopMatrix();
+
+    // Window
+    glPushMatrix();  // Back
+    glTranslatef(0.0f, -0.1f, -3.3f);
+    glScalef(0.55f, 0.2f, 0.35f);
+    drawTexturedCube(textures[14], 1.0f);
+    glPopMatrix();
+
+    glPushMatrix();  // Sides
+    glTranslatef(0.0f, -0.1f, -3.6f);
+    glScalef(0.66f, 0.2f, 0.3f);
+    drawTexturedCube(textures[14], 1.0f);
+    glPopMatrix();
+
+    // Lights
+    drawCarLight(0.49f, -0.65f, -2.39f);  // Right
+    drawCarLight(-0.49f, -0.65f, -2.39f); // Left
+
+    // License Plate
+    glPushMatrix();
+    glTranslatef(0.0f, -0.8f, -2.3f);
+    glScalef(0.5f, 0.25f, 0.1f);
+    drawTexturedCube(textures[16], 0.5f);
+    glPopMatrix();
+
+    // Bumper
+    glColor3f(1, 1, 1);
+    glPushMatrix();
+    glTranslatef(0.0f, -0.95f, -3.4f);
+    glScalef(1.31f, 0.1f, 2.4f);
+    glutSolidCube(1);
+    glColor3f(0, 0, 0);
+    glutWireCube(1);
+    glPopMatrix();
+
+    // Tires
+    drawWheel(-0.61f, -0.95f, -2.8f); // Rear left
+    drawWheel(-0.61f, -0.95f, -3.9f); // Front left
+    drawWheel(0.61f, -0.95f, -2.8f);  // Rear right
+    drawWheel(0.61f, -0.95f, -3.9f);  // Front right
+
+    glPopMatrix();
+}
+
+void drawCarNPClight(GLfloat x, GLfloat y, GLfloat z) {
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glScalef(0.2f, 0.15f, 0.2f);
+    drawTexturedSphere(textures[13], 1, 32, 10);
+    glPopMatrix();
+}
+
+void drawCarNPC(GLfloat x, GLfloat y, GLfloat z) {
+    setShinyMaterial();
+
+    // Body
+    glPushMatrix();
+    glTranslatef(x + 0.0f, y - 0.7f, z - 3.4f);
+    glScalef(0.8f, 0.4f, 1.2f);
+    drawTexturedCylinder(textures[17], 1, 1, 3, 32, 1);
+    glPopMatrix();
+
+    // Roof
+    glPushMatrix();
+    glTranslatef(x + 0.0f, y - 0.2f, z - 1.5);
+    glScalef(0.7f, 0.55f, 1.5f);
+    drawTexturedSphere(textures[15], 1, 32, 10);
+    glPopMatrix();
+
+    // Lights
+    drawCarNPClight(x + 0.5f, y - 0.69f, z + 0.2f); // Right
+    drawCarNPClight(x - 0.5f, y - 0.69f, z + 0.2f); // Left
+
+    // Tires
+    drawWheel(x - 0.72f, y - 0.95f, z - 2.8f); // Rear left
+    drawWheel(x - 0.72f, y - 0.95f, z - 0.2f); // Front left
+    drawWheel(x + 0.72f, y - 0.95f, z - 2.8f); // Rear right
+    drawWheel(x + 0.72f, y - 0.95f, z - 0.2f); // Front right
+}
+//________________________________________________________________________________
+
+
 // Draws all the parts of the scene to be displayed on the screen (called on each event requiring the window to be repainted)
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -318,6 +513,22 @@ void display() {
     drawGround();
     drawRoad();
     drawSidewalk();
+    //-----------------------------------------------------------------
+
+    //------------------------ Obstacles ------------------------------
+    glPushMatrix();
+    glTranslatef(0, 0, carNPCcoorZ);
+    drawCarNPC(-2, -1.15, -520);
+    drawCarNPC(3, -1.15, -580);
+    glPopMatrix();
+    //-----------------------------------------------------------------
+
+    //--------------------- Player's car ------------------------------
+    glPushMatrix();
+    glTranslatef(carX, carY + -1.15f, carZ + 1.0f);
+    drawCar();
+    glPopMatrix();
+    //-----------------------------------------------------------------
 
     glFlush();
     glutSwapBuffers();
