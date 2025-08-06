@@ -49,6 +49,14 @@ bool isGameOver = false;
 GLfloat carNPCcoorZ = 0.0f;
 GLfloat carNPCspeed = 0.1f;
 
+// Boulder (obstacle) animation variables
+GLfloat boulder1RotationAngle = 0;
+GLfloat boulder1X = 0.1;
+char boulder1MoveDirection = 'r';
+GLfloat boulder2RotationAngle = 0;
+GLfloat boulder2X = 0.1;
+char boulder2MoveDirection = 'l';
+
 // Texture variables
 vector<GLubyte*>p;
 GLuint textures[19];
@@ -761,6 +769,110 @@ void drawBarriers() {
 //________________________________________________________________________________
 
 
+//_________________________________ Obstacles ____________________________________
+void drawCone(GLfloat x, GLfloat y, GLfloat z) {
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textures[12]);
+
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
+    glBegin(GL_TRIANGLE_FAN);
+    glTexCoord2f(0.5f, 1.0f); glVertex3f(0.0f, 0.0f, 1.0f);
+    glNormal3f(0.0f, 0.0f, 1.0f);
+    for (int i = 0; i <= 20; i++) {
+        GLfloat angle = 2.0f * 3.14 * (GLfloat)i / (GLfloat)20;
+        GLfloat x = 0.5f * sinf(angle);
+        GLfloat y = 0.5f * cosf(angle);
+
+        GLfloat normalX = x * 0.5f;
+        GLfloat normalY = y * 0.5f;
+        GLfloat normalZ = 0.5f;
+        glNormal3f(normalX, normalY, normalZ);
+
+        glTexCoord2f((GLfloat)i / (GLfloat)20, 0.0f);
+        glVertex3f(x, y, 0.0f);
+    }
+    glEnd();
+    glPopMatrix();
+
+    glDisable(GL_TEXTURE_2D);
+}
+
+void drawSandHeap(GLfloat x, GLfloat y, GLfloat z, GLfloat scaleX, GLfloat scaleY, GLfloat scaleZ) {
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glScalef(scaleX, scaleY, scaleZ);
+    drawTexturedSphere(textures[3], 1, 32, 10);
+    glPopMatrix();
+}
+
+void drawSandPile(GLfloat x, GLfloat y, GLfloat z) {
+    setMatteMaterial();
+
+    drawSandHeap(x, y, z + 1, 2, 2, 2);
+    drawSandHeap(x + 1, y, z - 1, 2, 2, 2);
+    drawSandHeap(x - 1, y, z - 1, 2, 2, 2);
+    drawSandHeap(x, y + 2, z + 1, 1.5, 1.5, 1.5);
+}
+
+void drawHole(GLfloat x, GLfloat y, GLfloat z) {
+    glDisable(GL_LIGHTING);
+
+    glColor3f(0, 0, 0);
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glRotatef(90, 1, 0, 0);
+    glutSolidCone(2, 1, 20, 1);
+    glPopMatrix();
+
+    glEnable(GL_LIGHTING);
+}
+
+void drawCrate(GLfloat x, GLfloat y, GLfloat z) {
+    setMatteMaterial();
+
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glScalef(0.8, 0.75, 0.8);
+    drawTexturedCube(textures[5], 1.0f);
+    glPopMatrix();
+}
+
+void drawBoulder1(GLfloat x, GLfloat y, GLfloat z) {
+    glDisable(GL_LIGHTING);
+
+    glColor3f(0.5, 0.5, 0.5);
+    glPushMatrix();
+    glTranslatef(x - boulder1X, y, z);
+    glScalef(0.5, 0.5, 0.5);
+    glRotatef(boulder1RotationAngle, 0, 0, 1);
+    glutSolidDodecahedron();
+    glColor3f(0, 0, 0);
+    glutWireDodecahedron();
+    glPopMatrix();
+
+    glEnable(GL_LIGHTING);
+}
+
+void drawBoulder2(GLfloat x, GLfloat y, GLfloat z) {
+    glDisable(GL_LIGHTING);
+
+    glColor3f(0.5, 0.5, 0.5);
+    glPushMatrix();
+    glTranslatef(x - boulder2X, y, z);
+    glScalef(0.5, 0.5, 0.5);
+    glRotatef(boulder2RotationAngle, 0, 0, 1);
+    glutSolidDodecahedron();
+    glColor3f(0, 0, 0);
+    glutWireDodecahedron();
+    glPopMatrix();
+
+    glEnable(GL_LIGHTING);
+}
+//________________________________________________________________________________
+
+
 //___________________________________ Cars _______________________________________
 void drawWheel(GLfloat x, GLfloat y, GLfloat z) {
     glDisable(GL_LIGHTING);
@@ -1071,11 +1183,27 @@ void display() {
     //-----------------------------------------------------------------
 
     //------------------------ Obstacles ------------------------------
+    for (int i = 0; i < 5; i++) {
+        drawCone(i, -2, -100);
+        drawCone(i, -2, -1100); // Extras for perfect loop
+    }
+
+    drawCrate(0, -1.7, -250);
+    drawCrate(-4.5, -1.7, -250);
+    drawCrate(4.5, -1.7, -250);
+
+    drawSandPile(-3, -1.5, -400);
+
+    drawHole(0, -2.39, -500);
+    
     glPushMatrix();
     glTranslatef(0, 0, carNPCcoorZ);
     drawCarNPC(-2, -1.15, -520);
     drawCarNPC(3, -1.15, -580);
     glPopMatrix();
+
+    drawBoulder1(0, -1.5, -900);
+    drawBoulder2(0, -1.5, -750);
     //-----------------------------------------------------------------
 
     //--------------------- Player's car ------------------------------
