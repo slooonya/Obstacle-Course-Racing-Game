@@ -49,6 +49,9 @@ bool isGameOver = false;
 GLfloat carNPCcoorZ = 0.0f;
 GLfloat carNPCspeed = 0.1f;
 
+// Item animation variable
+GLfloat itemRotationAngle = 0;
+
 // Boulder (obstacle) animation variables
 GLfloat boulder1RotationAngle = 0;
 GLfloat boulder1X = 0.1;
@@ -1090,6 +1093,63 @@ void drawWalkingHuman(GLfloat x, GLfloat y, GLfloat z, Color color) {
 
 
 //___________________________________ Others _____________________________________
+void drawItem(GLfloat x, GLfloat y, GLfloat z) {
+    glDisable(GL_LIGHTING);
+
+    glColor3f(1, 1, 0);
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glScalef(0.3, 0.3, 0.3);
+    glRotatef(itemRotationAngle, 0, 1, 0);
+    glutSolidIcosahedron();
+    glColor3f(0, 0, 0);
+    glutWireIcosahedron();
+    glPopMatrix();
+
+    glEnable(GL_LIGHTING);
+}
+
+void drawTunnel(GLfloat x, GLfloat y, GLfloat z) {
+    glDisable(GL_LIGHTING);
+
+    glEnable(GL_STENCIL_TEST);
+    glClear(GL_STENCIL_BUFFER_BIT);
+
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    glDepthMask(GL_FALSE);
+
+    glColor3f(0, 0, 0); // Large cylinder
+    glPushMatrix();
+    glTranslatef(x, y - 3.0, z - 800.0f);
+    glutSolidCylinder(6, 5, 32, 1);
+    glPopMatrix();
+
+    glStencilFunc(GL_ALWAYS, 0, 0xFF);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+    glColor3f(1, 1, 1); // Small cylinder
+    glPushMatrix();
+    glTranslatef(x, y - 3.0, z - 800.0f);
+    glutSolidCylinder(5.5, 4.8, 32, 1);
+    glPopMatrix();
+
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    glDepthMask(GL_TRUE);
+    glStencilFunc(GL_EQUAL, 1, 0xFF);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+    glColor3f(0, 0, 0); // Large cylinder
+    glPushMatrix();
+    glTranslatef(x, y - 3.0, z - 800.0f);
+    glutSolidCylinder(6, 5, 32, 1);
+    glPopMatrix();
+
+    glDisable(GL_STENCIL_TEST);
+    glEnable(GL_LIGHTING);
+}
+
 void drawFinishLine(GLfloat x, GLfloat y, GLfloat z) {
     setShinyMaterial();
 
@@ -1149,6 +1209,11 @@ void display() {
     drawBuildings();
     drawFinishLine(0.0f, -2.3f, -990.0f);
 
+    for (int i = 0; i < 20; i++) {
+        drawTunnel(0, 0.0, -5 - i);
+        drawTunnel(0, 0.0, -5 - i - 1000);
+    }
+
     srand(42);
     for (int i = 0; i < 30; i++) {
         GLfloat zPosition = -100 - i * 20;
@@ -1204,6 +1269,27 @@ void display() {
 
     drawBoulder1(0, -1.5, -900);
     drawBoulder2(0, -1.5, -750);
+    //-----------------------------------------------------------------
+
+    //-------------------- Extra lives ------------------------------
+    drawItem(0, -1.5, -50);
+    drawItem(-2, -1.5, -150);
+    drawItem(2, -1.5, -250);
+    drawItem(0, -1.5, -350);
+    drawItem(-2, -1.5, -450);
+    drawItem(2, -1.5, -550);
+    drawItem(0, -1.5, -650);
+    drawItem(-1, -1.5, -750);
+    drawItem(1, -1.5, -850);
+    drawItem(0, -1.5, -950);
+    //-----------------------------------------------------------------
+
+    //- Extras to make the loop seamless (items seen in the distance) -
+    drawItem(0, -1.5, -1050);
+    drawCrate(0, -1.7, -1250);
+    drawCrate(-5, -1.7, -1250);
+    drawCrate(5, -1.7, -1250);
+    drawSandPile(-3, -1.5, -1400);
     //-----------------------------------------------------------------
 
     //--------------------- Player's car ------------------------------
@@ -1293,6 +1379,43 @@ void update(int value) {
         humanPosition -= 0.02f; // Walking
         //----------------------------------------------------
         
+        // -------------- - Boulders animation---------------- -
+        // Boulder 1 left-right movement
+        if (boulder1X > -4 && boulder1MoveDirection == 'r') {
+            boulder1X -= 0.1;
+            boulder1RotationAngle -= 5;
+        }
+        else
+            boulder1MoveDirection = 'l';
+
+        if (boulder1X < 4 && boulder1MoveDirection == 'l') {
+            boulder1X += 0.1;
+            boulder1RotationAngle += 5;
+        }
+        else
+            boulder1MoveDirection = 'r';
+
+        // Boulder 2 right-left movement
+        if (boulder2X > -4 && boulder2MoveDirection == 'r') {
+            boulder2X -= 0.1;
+            boulder2RotationAngle -= 5;
+        }
+        else
+            boulder2MoveDirection = 'l';
+
+        if (boulder2X < 4 && boulder2MoveDirection == 'l') {
+            boulder2X += 0.1;
+            boulder2RotationAngle += 5;
+        }
+        else
+            boulder2MoveDirection = 'r';
+        //----------------------------------------------------
+
+        // Item animation
+        if (itemRotationAngle < 355)
+            itemRotationAngle += 5;
+        else itemRotationAngle = 0;
+
         //--------- Day/Night light and background changing -------
         elapsedTime = glutGet(GLUT_ELAPSED_TIME) / 10000.0f;
 
