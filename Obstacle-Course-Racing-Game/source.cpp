@@ -288,6 +288,164 @@ void initTextures(void) { // Texture initialization
 //==============================================================================
 
 
+//======================== Text rendering ======================================
+void renderText(GLfloat x, GLfloat y, const char* text) {
+    glRasterPos2f(x, y);
+    for (const char* c = text; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+    }
+}
+
+void renderMainMenu() {
+    setOrthoProjection();
+    glPushMatrix();
+    glLoadIdentity();
+
+    glColor3f(0, 0, 0);
+    glBegin(GL_QUADS);
+    glVertex2f(240, 120); // Menu background
+    glVertex2f(560, 120);
+    glVertex2f(560, 370);
+    glVertex2f(240, 370);
+
+    glVertex2f(0, 120);   // Controls background
+    glVertex2f(220, 120);
+    glVertex2f(220, 370);
+    glVertex2f(0, 370);
+
+    glVertex2f(800, 120);  // Tips background
+    glVertex2f(580, 120);
+    glVertex2f(580, 370);
+    glVertex2f(800, 370);
+    glEnd();
+
+    glColor3f(0, 1, 0);    // Easy background
+    glBegin(GL_QUADS);
+    glVertex2f(360, 260);
+    glVertex2f(440, 260);
+    glVertex2f(440, 230);
+    glVertex2f(360, 230);
+    glEnd();
+
+    glColor3f(1, 1, 0);    // Medium background
+    glBegin(GL_QUADS);
+    glVertex2f(360, 220);
+    glVertex2f(440, 220);
+    glVertex2f(440, 190);
+    glVertex2f(360, 190);
+    glEnd();
+
+    glColor3f(1, 0, 0);    // Hard difficulty
+    glBegin(GL_QUADS);
+    glVertex2f(360, 180);
+    glVertex2f(440, 180);
+    glVertex2f(440, 150);
+    glVertex2f(360, 150);
+    glEnd();
+
+    glColor3f(1, 1, 1);
+    renderText(280, 320, "Welcome to the Racing Game!");
+    renderText(280, 280, "Select game difficulty to start:");
+
+    renderText(70, 320, "Controls:");
+    renderText(37, 290, "W - speed up");
+    renderText(40, 270, "S - slow down");
+    renderText(40, 250, "A - car turn left");
+    renderText(40, 230, "D - car turn right");
+    renderText(40, 200, "< - cam turn left");
+    renderText(40, 180, "> - cam turn right");
+    renderText(40, 150, "P - pause");
+
+    renderText(670, 320, "Tips:");
+    renderText(600, 290, "Try to avoid obstacles");
+    renderText(650, 250, "Hit = -1 life");
+    renderText(610, 210, "Collect yellow items");
+    renderText(640, 170, "Item = +1 life");
+
+    glColor3f(0, 0, 0);
+    renderText(380, 240, "Easy");
+    renderText(370, 200, "Medium");
+    renderText(380, 160, "Hard");
+
+    glPopMatrix();
+    resetPerspectiveProjection();
+}
+
+void renderPauseMenu() {
+    setOrthoProjection();
+    glPushMatrix();
+    glLoadIdentity();
+
+    glColor3f(0, 0, 0);    // Menu background
+    glBegin(GL_QUADS);
+    glVertex2f(290, 290);
+    glVertex2f(520, 290);
+    glVertex2f(520, 190);
+    glVertex2f(290, 190);
+    glEnd();
+
+    glColor3f(1, 1, 1);
+    renderText(350, 250, "Game Paused");
+    renderText(330, 210, "Press 'P' to resume");
+
+    glPopMatrix();
+    resetPerspectiveProjection();
+}
+
+void renderGameOver() {
+    setOrthoProjection();
+    char strScore[50];
+    sprintf_s(strScore, "Score: %d", score);
+
+    glPushMatrix();
+    glLoadIdentity();
+
+    glColor3f(0, 0, 0);    // Menu background
+    glBegin(GL_QUADS);
+    glVertex2f(290, 290);
+    glVertex2f(520, 290);
+    glVertex2f(520, 140);
+    glVertex2f(290, 140);
+    glEnd();
+
+    glColor3f(1, 1, 1);
+    renderText(360, 250, "Game Over");
+    renderText(360, 210, strScore);
+    renderText(330, 170, "Press 'R' to restart");
+
+    glPopMatrix();
+    resetPerspectiveProjection();
+}
+
+void renderScore(int score) {
+    setOrthoProjection();
+    char strScore[50];
+    sprintf_s(strScore, "Score: %d", score);
+
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(1, 1, 1);
+    renderText(650, 450, strScore);
+    glPopMatrix();
+    resetPerspectiveProjection();
+}
+
+void renderLives(int lives) {
+    setOrthoProjection();
+    glPushMatrix();
+
+    char livesText[20];
+    sprintf_s(livesText, "Lives: %d", lives);
+
+    glColor3f(1, 1, 1);
+    renderText(50, 450, livesText);
+
+    glPopMatrix();
+    resetPerspectiveProjection();
+}
+//===============================================================================
+
+
 //=========================== Lighting and Materials =============================
 void setupLighting() {
     GLfloat light_ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
@@ -731,6 +889,23 @@ void display() {
     glLoadIdentity();
 
     gluLookAt(camTurn, 0.1, carZ + 5.0, 0.0, 0.0, carZ, 0.0, 1.0, 0.0);
+    
+    //--------------------- Game state (menus) -----------------------
+    glDisable(GL_LIGHTING);
+    if (inMenu) {
+        renderMainMenu();
+    }
+
+    renderScore(score);
+    renderLives(lives);
+
+    if (isPaused) {
+        renderPauseMenu();
+    }
+
+    if (isGameOver) {
+        renderGameOver();
+    }
     //-----------------------------------------------------------------
 
     glEnable(GL_LIGHTING);

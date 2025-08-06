@@ -3,29 +3,30 @@ C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-
 C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(123,25): warning C4305: '-=': truncation from 'double' to 'GLfloat'
 C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(158,24): warning C4305: '+=': truncation from 'double' to 'GLfloat'
 C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(162,24): warning C4305: '-=': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(360,23): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(373,23): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(514,49): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(515,54): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(527,19): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(527,14): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(536,24): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(536,19): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(536,14): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(545,26): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(546,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(547,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(548,30): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(551,27): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(552,29): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(553,29): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(554,31): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(565,19): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(565,14): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(686,40): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(713,31): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(753,20): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(754,19): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(777,27): warning C4244: '+=': conversion from 'GLfloat' to 'GLint', possible loss of data
-C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(783,25): warning C4305: '+=': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(518,23): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(531,23): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(672,49): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(673,54): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(685,19): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(685,14): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(694,24): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(694,19): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(694,14): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(703,26): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(704,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(705,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(706,30): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(709,27): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(710,29): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(711,29): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(712,31): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(723,19): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(723,14): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(844,40): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(871,31): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(928,20): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(929,19): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(952,27): warning C4244: '+=': conversion from 'GLfloat' to 'GLint', possible loss of data
+C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\Obstacle-Course-Racing-Game\source.cpp(958,25): warning C4305: '+=': truncation from 'double' to 'GLfloat'
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Obstacle-Course-Racing-Game.vcxproj -> C:\Users\user\source\repos\slooonya\Obstacle-Course-Racing-Game\x64\Debug\Obstacle-Course-Racing-Game.exe
