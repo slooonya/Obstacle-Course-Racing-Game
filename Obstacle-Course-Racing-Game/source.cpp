@@ -63,6 +63,13 @@ imagewidth16, imageheight16, pixellength16,
 imagewidth17, imageheight17, pixellength17;
 GLubyte checkImage[checkImageWidth][checkImageHeight][3];
 
+// Light parameters to be changed over time
+GLfloat elapsedTime = 0.0f;
+GLfloat light0_position[] = { 0, 3, 3, 0.0 };
+GLfloat light1_position[] = { 0, 80, 84, 0.0 };
+GLfloat light2_position[] = { 1, -1, 2, 0.0 };
+GLfloat light_diffuse[] = { 1.0f, 0.95f, 0.8f, 1.0f };
+
 
 //================ Projection and Viewport Setting =============================
 void setOrthoProjection() { // Setting for the menus and text
@@ -215,6 +222,18 @@ void setupTexture(GLuint textureID, GLubyte* data, GLint width, GLint height) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 }
 
+void makeCheckImage(void) { // Creates checkerboard pattern
+    int i, j, c;
+    for (i = 0; i < checkImageWidth; i++) {
+        for (j = 0; j < checkImageHeight; j++) {
+            c = (((i & 0x8) == 0) ^ ((j & 0x8) == 0)) * 255;
+            checkImage[i][j][0] = (GLubyte)c;
+            checkImage[i][j][1] = (GLubyte)c;
+            checkImage[i][j][2] = (GLubyte)c;
+        }
+    }
+}
+
 void initTextures(void) { // Texture initialization 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -239,7 +258,7 @@ void initTextures(void) { // Texture initialization
     ReadImage("metal.bmp", imagewidth15, imageheight15, pixellength15);
     ReadImage("license.bmp", imagewidth16, imageheight16, pixellength16);
     ReadImage("aluminum.bmp", imagewidth17, imageheight17, pixellength17);
-    // makeCheckImage();
+    makeCheckImage();
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glGenTextures(19, &textures[0]);
@@ -270,6 +289,31 @@ void initTextures(void) { // Texture initialization
 
 
 //=========================== Lighting and Materials =============================
+void setupLighting() {
+    GLfloat light_ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+    GLfloat light_specular[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
+    glEnable(GL_LIGHT2);
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+    glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
+
+    glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
+    glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
+
+    glLightfv(GL_LIGHT2, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT2, GL_SPECULAR, light_specular);
+    glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
+}
+
 void setMaterial(GLfloat ambient[], GLfloat diffuse[], GLfloat specular[], GLfloat shininess) {
     glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
@@ -448,6 +492,91 @@ void drawSidewalk() { // Drawing tile by tile to avoid pixelation
 //________________________________________________________________________________
 
 
+//________________________________ Buildings _____________________________________
+void drawBuilding(int heightIndex, GLfloat x, GLfloat y, GLfloat z) {
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glScalef(5.0f, (heightIndex + 1) * 5.0f, 5.0f);
+    drawTexturedCube(textures[8 + heightIndex], 1.0f);
+    glPopMatrix();
+}
+
+void drawBuildings() {
+    srand(666);
+    int randHeights[4];
+    for (int j = 0; j < 4; ++j) { // Generating random heights
+        randHeights[j] = (rand() % 13) + 12;
+    }
+
+    setShinyMaterial();
+    for (int i = 1; i <= 20; i++) { // Draws rows of buildings on each sides of the road
+        for (int j = 0; j < 4; ++j) {
+            drawBuilding(j, 16, 2.5, (-i * 100) + (j * 25));    // Right side
+            drawBuilding(3 - j, -16, 2.5, (-i * 100) + (j * 25)); // Left side
+        }
+    }
+}
+//________________________________________________________________________________
+
+
+//__________________________________ Trees _______________________________________
+void drawTreeTrunk(GLfloat x, GLfloat y, GLfloat z) {
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+    glScalef(0.1, 0.1, 1);
+    drawTexturedCylinder(textures[1], 1.0f, 1.0f, 5.0f, 32, 1);
+    glPopMatrix();
+
+}
+
+void drawTreeFoliage(GLfloat x, GLfloat y, GLfloat z) {
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glScalef(1.2, 1.2, 1.2);
+    drawTexturedSphere(textures[4], 1, 32, 10);
+    glPopMatrix();
+}
+
+void drawTrees() {
+    setMatteMaterial();
+    for (int i = 0; i < 70; i++) { // Draws rows of trees on the sidewalks
+        // Right side
+        drawTreeTrunk(9, 0.2, -10.0f - i * 20);
+        drawTreeFoliage(9, 0.7, -10.0f - i * 20);
+        drawTreeFoliage(8, 0.2, -10.0f - i * 20);
+        drawTreeFoliage(9.5, 0.2, -9.5f - i * 20);
+
+        // Left side
+        drawTreeTrunk(-9, 0.2, -10.0f - i * 20);
+        drawTreeFoliage(-9, 0.7, -10.0f - i * 20);
+        drawTreeFoliage(-8, 0.2, -10.0f - i * 20);
+        drawTreeFoliage(-9.5, 0.2, -9.5f - i * 20);
+    }
+}
+//________________________________________________________________________________
+
+
+//_________________________________ Barriers _____________________________________
+void drawBarrier(GLfloat x, GLfloat y, GLfloat z) {
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+    glScalef(0.1, 0.1, 1);
+    drawTexturedCylinder(textures[6], 1.0, 1.0, 1.0, 32, 1);
+    glPopMatrix();
+}
+
+void drawBarriers() {
+    setShinyMaterial();
+    for (int i = 0; i < 140; i++) { // Draws road barriers on the sidewalks
+        drawBarrier(6.5, -1.5, -0.5f - i * 10.0f);  // Right side
+        drawBarrier(-6.5, -1.5, -0.5f - i * 10.0f); // Left side
+    }
+}
+//________________________________________________________________________________
+
+
 //___________________________________ Cars _______________________________________
 void drawWheel(GLfloat x, GLfloat y, GLfloat z) {
     glDisable(GL_LIGHTING);
@@ -572,17 +701,50 @@ void drawCarNPC(GLfloat x, GLfloat y, GLfloat z) {
 //________________________________________________________________________________
 
 
+//___________________________________ Others _____________________________________
+void drawFinishLine(GLfloat x, GLfloat y, GLfloat z) {
+    setShinyMaterial();
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textures[18]);
+
+    for (int i = 0; i < 7; i++) {
+        glPushMatrix();
+        glTranslatef(x - 4.7f + 1.5 * i, y, z);
+        glScalef(1.0f, 0.1f, 1.0f);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0, 0.0); glVertex3f(-1.0f, 0.0f, -1.0f);
+        glTexCoord2f(1.0, 0.0); glVertex3f(1.0f, 0.0f, -1.0f);
+        glTexCoord2f(1.0, 1.0); glVertex3f(1.0f, 0.0f, 1.0f);
+        glTexCoord2f(0.0, 1.0); glVertex3f(-1.0f, 0.0f, 1.0f);
+        glEnd();
+        glPopMatrix();
+    }
+    glDisable(GL_TEXTURE_2D);
+}
+//================================================================================
+
+
 // Draws all the parts of the scene to be displayed on the screen (called on each event requiring the window to be repainted)
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glLoadIdentity();
 
     gluLookAt(camTurn, 0.1, carZ + 5.0, 0.0, 0.0, carZ, 0.0, 1.0, 0.0);
+    //-----------------------------------------------------------------
+
+    glEnable(GL_LIGHTING);
+    setupLighting();
 
     //---------------------- Environment ------------------------------
     drawGround();
     drawRoad();
     drawSidewalk();
+    drawTrees();
+    drawBuildings();
+    drawFinishLine(0.0f, -2.3f, -990.0f);
+
+    drawBarriers();
     //-----------------------------------------------------------------
 
     //------------------------ Obstacles ------------------------------
@@ -657,6 +819,33 @@ void update(int value) {
             }
         }
         //----------------------------------------------------
+        
+        //--------- Day/Night light and background changing -------
+        elapsedTime = glutGet(GLUT_ELAPSED_TIME) / 10000.0f;
+
+        light0_position[0] = cos(elapsedTime) * 10;
+
+        light1_position[1] = 80 + sin(elapsedTime) * 10;
+        light2_position[0] = 1 + sin(elapsedTime);
+
+        light_diffuse[0] = 0.5f + 0.5f * sin(elapsedTime);
+        light_diffuse[1] = 0.5f + 0.5f * sin(elapsedTime);
+        light_diffuse[2] = 0.8f + 0.2f * sin(elapsedTime);
+
+        glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
+        glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
+        glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
+
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+        glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
+        glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse);
+
+        GLfloat bgR = 0.1f + 0.5f * sin(elapsedTime);
+        GLfloat bgG = 0.1f + 0.5f * sin(elapsedTime);
+        GLfloat bgB = 0.2f + 0.3f * sin(elapsedTime);
+
+        glClearColor(bgR, bgG, bgB, 1);
+        //--------------------------------------------------------
     }
 
     glutPostRedisplay();
