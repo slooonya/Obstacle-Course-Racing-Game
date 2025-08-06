@@ -108,6 +108,114 @@ const int NUM_COLORS = 5;
 //=============================================================================
 
 
+//== Bounding boxes for obstacles and the player's car (collision detection) ==
+struct BoundingBox {
+    GLfloat xMin, xMax;
+    GLfloat yMin, yMax;
+    GLfloat zMin, zMax;
+};
+
+BoundingBox createCarBoundingBox(GLfloat x, GLfloat y, GLfloat z) {
+    BoundingBox box;
+    box.xMin = x - 0.65f;
+    box.xMax = x + 0.65f;
+    box.yMin = y - 0.3f;
+    box.yMax = y + 0.3f;
+    box.zMin = z - 1.1f;
+    box.zMax = z + 1.1f;
+    return box;
+}
+
+BoundingBox createConesBoundingBox(GLfloat x, GLfloat y, GLfloat z) {
+    BoundingBox box;
+    box.xMin = x - 0.5f;
+    box.xMax = x + 5.5f;
+    box.yMin = y - 0.5f;
+    box.yMax = y + 0.5f;
+    box.zMin = z - 0.5f;
+    box.zMax = z + 0.5f;
+    return box;
+}
+
+BoundingBox createCrateBoundingBox(GLfloat x, GLfloat y, GLfloat z) {
+    BoundingBox box;
+    box.xMin = x - 0.75f;
+    box.xMax = x + 0.75f;
+    box.yMin = y - 0.75f;
+    box.yMax = y + 0.75f;
+    box.zMin = z - 0.75f;
+    box.zMax = z + 0.75f;
+    return box;
+}
+
+BoundingBox createSandpileBoundingBox(GLfloat x, GLfloat y, GLfloat z) {
+    BoundingBox box;
+    box.xMin = x - 3.0f;
+    box.xMax = x + 3.0f;
+    box.yMin = y - 2.0f;
+    box.yMax = y + 3.0f;
+    box.zMin = z - 3.0f;
+    box.zMax = z + 3.0f;
+    return box;
+}
+
+BoundingBox createHoleBoundingBox(GLfloat x, GLfloat y, GLfloat z) {
+    BoundingBox box;
+    box.xMin = x - 2.0f;
+    box.xMax = x + 2.0f;
+    box.yMin = y;
+    box.yMax = y + 1.0f;
+    box.zMin = z - 2.0f;
+    box.zMax = z + 2.0f;
+    return box;
+}
+
+BoundingBox createBoulder1BoundingBox(GLfloat x, GLfloat y, GLfloat z) {
+    BoundingBox box;
+    box.xMin = x - boulder1X - 0.5f;
+    box.xMax = x - boulder1X + 0.5f;
+    box.yMin = y - 0.5f;
+    box.yMax = y + 0.5f;
+    box.zMin = z - 0.5f;
+    box.zMax = z + 0.5f;
+    return box;
+}
+
+BoundingBox createBoulder2BoundingBox(GLfloat x, GLfloat y, GLfloat z) {
+    BoundingBox box;
+    box.xMin = x - boulder2X - 0.5f;
+    box.xMax = x - boulder2X + 0.5f;
+    box.yMin = y - 0.5f;
+    box.yMax = y + 0.5f;
+    box.zMin = z - 0.5f;
+    box.zMax = z + 0.5f;
+    return box;
+}
+
+BoundingBox createCarNPCBoundingBox(GLfloat x, GLfloat y, GLfloat z) {
+    BoundingBox box;
+    box.xMin = x - 0.8f;
+    box.xMax = x + 0.8f;
+    box.yMin = y - 0.95f;
+    box.yMax = y + 0.95f;
+    box.zMin = z - 3.0f;
+    box.zMax = z + 3.0f;
+    return box;
+}
+
+BoundingBox createItemBoundingBox(GLfloat x, GLfloat y, GLfloat z) {
+    BoundingBox box;
+    box.xMin = x - 0.3f;
+    box.xMax = x + 0.3f;
+    box.yMin = y - 0.3f;
+    box.yMax = y + 0.3f;
+    box.zMin = z - 0.3f;
+    box.zMax = z + 0.3f;
+    return box;
+}
+//==============================================================================
+
+
 //================ Projection and Viewport Setting =============================
 void setOrthoProjection() { // Setting for the menus and text
     glMatrixMode(GL_PROJECTION);
@@ -220,10 +328,10 @@ void mouseInput(int button, int state, int x, int y) {
         }
     }
 }
-//================================================================================
+//==============================================================================
 
 
-//======================= Texture mapping ========================================
+//======================= Texture mapping ======================================
 void ReadImage(const char path[256], GLint& imagewidth, GLint& imageheight, GLint& pixellength) {
     // Reading bitmap images
     GLubyte* pixeldata;
@@ -483,7 +591,7 @@ void renderLives(int lives) {
 //===============================================================================
 
 
-//=========================== Lighting and Materials =============================
+//=========================== Lighting and Materials ============================
 void setupLighting() {
     GLfloat light_ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
     GLfloat light_specular[] = { 0.5f, 0.5f, 0.5f, 1.0f };
@@ -533,10 +641,10 @@ void setMatteMaterial() {
 
     setMaterial(ambient, diffuse, specular, shininess);
 }
-//================================================================================
+//===============================================================================
 
 
-//================ Generic functions to texture 3D shapes ========================
+//================ Generic functions to texture 3D shapes =======================
 void drawTexturedCylinder(GLuint textureID, GLfloat baseRadius, GLfloat topRadius,
     GLfloat height, GLint slices, GLint stacks) {
     GLUquadric* quadric = gluNewQuadric();
@@ -1173,13 +1281,92 @@ void drawFinishLine(GLfloat x, GLfloat y, GLfloat z) {
 //================================================================================
 
 
+//============================= Collision detection ==============================
+bool checkCollision(BoundingBox box1, BoundingBox box2) {
+    return (box1.xMin <= box2.xMax && box1.xMax >= box2.xMin) &&
+        (box1.yMin <= box2.yMax && box1.yMax >= box2.yMin) &&
+        (box1.zMin <= box2.zMax && box1.zMax >= box2.zMin);
+}
+
+void checkCollisions() {
+    BoundingBox carBox = createCarBoundingBox(carX + 0.65, carY + -1.2f, carZ - 0.4f);
+
+    // Bounding boxes for the obstacles
+    BoundingBox coneBox = createConesBoundingBox(0, -2, -100);
+    BoundingBox crateBox1 = createCrateBoundingBox(-4, -1.7, -250);
+    BoundingBox crateBox2 = createCrateBoundingBox(5, -1.7, -250);
+    BoundingBox crateBox3 = createCrateBoundingBox(0, -1.7, -250);
+    BoundingBox sandpileBox = createSandpileBoundingBox(-3, -1.5, -400);
+    BoundingBox holeBox = createHoleBoundingBox(0, -2.39, -500);
+    BoundingBox boulderBox1 = createBoulder1BoundingBox(0, -1.5, -900);
+    BoundingBox boulderBox2 = createBoulder2BoundingBox(0, -1.5, -750);
+    BoundingBox npcBox1 = createCarBoundingBox(-2, -1.15f, -520 + carNPCcoorZ);
+    BoundingBox npcBox2 = createCarNPCBoundingBox(3, -1.15f, -580 + carNPCcoorZ);
+
+    // Bounding boxes for the items
+    BoundingBox item1BoundingBox = createItemBoundingBox(0, -1.5, -50);
+    BoundingBox item2BoundingBox = createItemBoundingBox(-2, -1.5, -150);
+    BoundingBox item3BoundingBox = createItemBoundingBox(2, -1.5, -250);
+    BoundingBox item4BoundingBox = createItemBoundingBox(0, -1.5, -350);
+    BoundingBox item5BoundingBox = createItemBoundingBox(-2, -1.5, -450);
+    BoundingBox item6BoundingBox = createItemBoundingBox(2, -1.5, -550);
+    BoundingBox item7BoundingBox = createItemBoundingBox(0, -1.5, -650);
+    BoundingBox item8BoundingBox = createItemBoundingBox(-1, -1.5, -750);
+    BoundingBox item9BoundingBox = createItemBoundingBox(1, -1.5, -850);
+    BoundingBox item10BoundingBox = createItemBoundingBox(0, -1.5, -950);
+
+    // Condition to make sure that the penalty applies only once per collision
+    if (!collisionOccured) { // Checking collision with obstacles/items
+        if (checkCollision(carBox, coneBox) ||
+            checkCollision(carBox, crateBox1) || checkCollision(carBox, crateBox2) || checkCollision(carBox, crateBox3) ||
+            checkCollision(carBox, sandpileBox) ||
+            checkCollision(carBox, holeBox) ||
+            checkCollision(carBox, boulderBox1) || checkCollision(carBox, boulderBox2) ||
+            checkCollision(carBox, npcBox1) || checkCollision(carBox, npcBox2)) {
+
+            lives--;
+            score -= 1000;
+            collisionOccured = true;
+
+            if (lives <= 0) {
+                isGameOver = true;
+            }
+        }
+        else if (checkCollision(carBox, item1BoundingBox) || checkCollision(carBox, item2BoundingBox) || checkCollision(carBox, item3BoundingBox) ||
+            checkCollision(carBox, item4BoundingBox) || checkCollision(carBox, item5BoundingBox) || checkCollision(carBox, item6BoundingBox) ||
+            checkCollision(carBox, item7BoundingBox) || checkCollision(carBox, item8BoundingBox) || checkCollision(carBox, item9BoundingBox) ||
+            checkCollision(carBox, item10BoundingBox)) {
+
+            lives++;
+            collisionOccured = true;
+        }
+    }
+    else {
+        if (!(checkCollision(carBox, coneBox) ||
+            checkCollision(carBox, crateBox1) || checkCollision(carBox, crateBox2) || checkCollision(carBox, crateBox3) ||
+            checkCollision(carBox, sandpileBox) ||
+            checkCollision(carBox, holeBox) ||
+            checkCollision(carBox, boulderBox1) || checkCollision(carBox, boulderBox2) ||
+            checkCollision(carBox, npcBox1) || checkCollision(carBox, npcBox2) ||
+            checkCollision(carBox, item1BoundingBox) || checkCollision(carBox, item2BoundingBox) || checkCollision(carBox, item3BoundingBox) ||
+            checkCollision(carBox, item4BoundingBox) || checkCollision(carBox, item5BoundingBox) || checkCollision(carBox, item6BoundingBox) ||
+            checkCollision(carBox, item7BoundingBox) || checkCollision(carBox, item8BoundingBox) || checkCollision(carBox, item9BoundingBox) ||
+            checkCollision(carBox, item10BoundingBox))) {
+
+            collisionOccured = false;
+        }
+    }
+}
+//================================================================================
+
+
 // Draws all the parts of the scene to be displayed on the screen (called on each event requiring the window to be repainted)
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glLoadIdentity();
 
     gluLookAt(camTurn, 0.1, carZ + 5.0, 0.0, 0.0, carZ, 0.0, 1.0, 0.0);
-    
+
     //--------------------- Game state (menus) -----------------------
     glDisable(GL_LIGHTING);
     if (inMenu) {
@@ -1245,6 +1432,7 @@ void display() {
     }
 
     drawBarriers();
+
     //-----------------------------------------------------------------
 
     //------------------------ Obstacles ------------------------------
@@ -1260,7 +1448,7 @@ void display() {
     drawSandPile(-3, -1.5, -400);
 
     drawHole(0, -2.39, -500);
-    
+
     glPushMatrix();
     glTranslatef(0, 0, carNPCcoorZ);
     drawCarNPC(-2, -1.15, -520);
@@ -1318,7 +1506,7 @@ void update(int value) {
             carZ = 0;
             carNPCcoorZ = 0;
             carSpeed += 0.1;
-            // humanPosition = 0.0f;
+            humanPosition = 0.0f;
             lives++;
         }
 
@@ -1378,8 +1566,8 @@ void update(int value) {
 
         humanPosition -= 0.02f; // Walking
         //----------------------------------------------------
-        
-        // -------------- - Boulders animation---------------- -
+
+        //--------------- Boulders animation -----------------
         // Boulder 1 left-right movement
         if (boulder1X > -4 && boulder1MoveDirection == 'r') {
             boulder1X -= 0.1;
@@ -1415,6 +1603,8 @@ void update(int value) {
         if (itemRotationAngle < 355)
             itemRotationAngle += 5;
         else itemRotationAngle = 0;
+
+        checkCollisions();
 
         //--------- Day/Night light and background changing -------
         elapsedTime = glutGet(GLUT_ELAPSED_TIME) / 10000.0f;
