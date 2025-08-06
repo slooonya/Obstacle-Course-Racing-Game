@@ -23,6 +23,15 @@ GLfloat carSpeed = 0.0f;
 GLfloat wheelRotationAngle = 0.0f;
 GLint numSpeedUp = 0;
 
+// Human animation variables
+GLfloat armAngle = 0.0f;
+bool armUp = true;
+GLfloat legAngle = 0.0f;
+GLfloat humanPosition = 0.0f;
+const GLint NUM_SPECTATORS = 5;
+const GLfloat SPECTATOR_SPACING = 200.0f;
+const GLfloat WALKING_HUMAN_SPACING = 100.0f;
+
 // Camera control
 GLfloat camTurn = 0;
 
@@ -69,6 +78,23 @@ GLfloat light0_position[] = { 0, 3, 3, 0.0 };
 GLfloat light1_position[] = { 0, 80, 84, 0.0 };
 GLfloat light2_position[] = { 1, -1, 2, 0.0 };
 GLfloat light_diffuse[] = { 1.0f, 0.95f, 0.8f, 1.0f };
+
+
+//====================== Colors for human torsos and arms =====================
+struct Color {
+    GLfloat r, g, b;
+};
+
+Color colors[] = {
+    {1.0f, 0.349f, 0.371f},
+    {1.0f, 0.792f, 0.227f},
+    {0.541f, 0.784f, 0.149f},
+    {0.098f, 0.51f, 0.769f},
+    {0.416f, 0.298f, 0.576f}
+};
+
+const int NUM_COLORS = 5;
+//=============================================================================
 
 
 //================ Projection and Viewport Setting =============================
@@ -859,6 +885,98 @@ void drawCarNPC(GLfloat x, GLfloat y, GLfloat z) {
 //________________________________________________________________________________
 
 
+//___________________________________ Humans _____________________________________
+void drawHumanTorso(Color color) {
+    glColor3f(color.r, color.g, color.b);
+    glPushMatrix();
+    glTranslatef(0.0f, 0.2f, 0.0f);
+    glScalef(0.5f, 0.9f, 0.3f);
+    glutSolidCube(1);
+
+    glColor3f(0, 0, 0);
+    glutWireCube(1);
+    glPopMatrix();
+}
+
+void drawHumanHead() {
+    glColor3f(0.9f, 0.7f, 0.6f);
+    glPushMatrix();
+    glTranslatef(0.0f, 0.95f, 0.0f);
+    glutSolidSphere(0.3, 20, 20);
+    glPopMatrix();
+}
+
+void drawHumanArm(int side, GLfloat xOffset, bool isCheering, bool isWalking, GLfloat armAngle, Color color) {
+    glColor3f(color.r, color.g, color.b);
+    glPushMatrix();
+    glTranslatef(xOffset, 0.5f, 0.0f);
+    if (isCheering) {
+        glRotatef((xOffset < 0 ? 180 + armAngle : -180 - armAngle), 0.0f, 0.0f, 1.0f);
+    }
+    if (isWalking) {
+        glRotatef(((side == 0) ? sin(armAngle) * 20 : -sin(armAngle) * 20), 1.0f, 0.0f, 0.0f);
+    }
+    glTranslatef(0.0f, -0.4f, 0.0f);
+    glScalef(0.1f, 0.8f, 0.1f);
+    glutSolidCube(1);
+
+    glColor3f(0, 0, 0);
+    glutWireCube(1);
+    glPopMatrix();
+}
+
+void drawHumanLeg(int side, GLfloat xOffset, bool isWalking, GLfloat legAngle) {
+    glColor3f(0.2f, 0.2f, 0.8f);
+    glPushMatrix();
+    glTranslatef(xOffset, -0.1f, 0.0f);
+    if (isWalking) {
+        glRotatef(((side == 0) ? -sin(legAngle) * 20 : sin(legAngle) * 20), 1.0f, 0.0f, 0.0f);
+    }
+    glTranslatef(0.0f, -0.4f, 0.0f);
+    glScalef(0.1f, 0.8f, 0.1f);
+    glutSolidCube(1);
+
+    glColor3f(0, 0, 0);
+    glutWireCube(1);
+    glPopMatrix();
+}
+
+void drawStandingHuman(GLfloat x, GLfloat y, GLfloat z, bool isCheering, Color color) {
+    glDisable(GL_LIGHTING);
+    glPushMatrix();
+    glTranslatef(x, y, z);
+
+    drawHumanTorso(color);
+    drawHumanHead();
+    drawHumanArm(0, -0.35f, isCheering, false, armAngle, color); // Right
+    drawHumanArm(1, 0.35f, isCheering, false, armAngle, color);  // Left
+    drawHumanLeg(0, -0.15f, false, 0.0f); // Right
+    drawHumanLeg(1, 0.15f, false, 0.0f);   // Left
+
+    glPopMatrix();
+    glEnable(GL_LIGHTING);
+}
+
+void drawWalkingHuman(GLfloat x, GLfloat y, GLfloat z, Color color) {
+    glDisable(GL_LIGHTING);
+
+    glPushMatrix();
+    glTranslatef(x, y, z);
+
+    drawHumanTorso(color);
+    drawHumanHead();
+    drawHumanArm(1, -0.3f, false, true, legAngle, color); // Right
+    drawHumanArm(0, 0.3f, false, true, legAngle, color);   // Left
+    drawHumanLeg(1, -0.15f, true, legAngle); // Right
+    drawHumanLeg(0, 0.15f, true, legAngle);   // Left
+
+    glPopMatrix();
+
+    glEnable(GL_LIGHTING);
+}
+//________________________________________________________________________________
+
+
 //___________________________________ Others _____________________________________
 void drawFinishLine(GLfloat x, GLfloat y, GLfloat z) {
     setShinyMaterial();
@@ -918,6 +1036,36 @@ void display() {
     drawTrees();
     drawBuildings();
     drawFinishLine(0.0f, -2.3f, -990.0f);
+
+    srand(42);
+    for (int i = 0; i < 30; i++) {
+        GLfloat zPosition = -100 - i * 20;
+        int colorIndex = rand() % NUM_COLORS; // Generating random shirt colors
+        Color color = colors[colorIndex];
+        bool isCheering = (i % 2 == 0);
+
+        if (i % 2 == 0) {
+            drawStandingHuman(7.0f, -1.4, zPosition, isCheering, color);
+            drawStandingHuman(-7.0, -1.4f, zPosition, !isCheering, color);
+
+            drawStandingHuman(7.0f, -1.4, zPosition - 1000, isCheering, color);
+            drawStandingHuman(-7.0, -1.4f, zPosition - 1000, !isCheering, color);
+        }
+        else if (i % 3 == 0) {
+            drawStandingHuman(7.0f, -1.4, zPosition, isCheering, color);
+            drawStandingHuman(-7.0, -1.4f, zPosition, !isCheering, color);
+
+            drawStandingHuman(7.0f, -1.4, zPosition - 1000, isCheering, color);
+            drawStandingHuman(-7.0, -1.4f, zPosition - 1000, !isCheering, color);
+        }
+        else if (i % 5 == 0) {
+            drawWalkingHuman(7.0f, -1.4f, zPosition + humanPosition, color);
+            drawWalkingHuman(-7.0f, -1.4f, zPosition - humanPosition, color);
+
+            drawWalkingHuman(7.0f, -1.4f, zPosition + humanPosition - 1000, color);
+            drawWalkingHuman(-7.0f, -1.4f, zPosition - humanPosition - 1000, color);
+        }
+    }
 
     drawBarriers();
     //-----------------------------------------------------------------
@@ -993,6 +1141,28 @@ void update(int value) {
                 }
             }
         }
+        //----------------------------------------------------
+
+        //------------- Spectator animation ------------------
+        if (armUp) {  // Cheering
+            armAngle += 2.0f;
+            if (armAngle > 20.0f) {
+                armUp = false;
+            }
+        }
+        else {
+            armAngle -= 2.0f;
+            if (armAngle < -20.0f) {
+                armUp = true;
+            }
+        }
+
+        legAngle += 0.1f;  // Leg movement         
+        if (legAngle > 2 * 3.14f) {
+            legAngle = 0.0f;
+        }
+
+        humanPosition -= 0.02f; // Walking
         //----------------------------------------------------
         
         //--------- Day/Night light and background changing -------
