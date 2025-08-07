@@ -31,7 +31,9 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Under Construction 🛠️
+Obstacle Course Racing Game is a simple 3D driving game where you control a car through a looping track filled with obstacles. This project demonstrates basic 3D graphics techniques like modeling, texturing, and lighting in a playable format. Perfect for learning game development fundamentals!
+
+<img width="1409" height="1413" alt="Screenshots" src="https://github.com/user-attachments/assets/2764d4ca-8ed1-414e-afc9-1df0bfdd7823" />
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -48,15 +50,50 @@ Under Construction 🛠️
 <!-- GETTING STARTED -->
 ## Getting Started
 
-//
+To get a local copy up and running follow these simple steps.
 
 ### Prerequisites
 
-//
+Make sure you have the following installed on your system:
+
+1. C++ Compiler
+   - [Visual Studio](https://visualstudio.microsoft.com/vs/community/)
+2. freeglut Library
+   - [freeglut](https://freeglut.sourceforge.net/index.php#download)
+3. Git (for cloning the repository)
+   - [Download Git](https://git-scm.com/)
 
 ### Installation
 
-//
+1. Clone the repository:
+
+```bash
+git clone https://github.com/slooonya/obstacle-course-racing-game.git
+```
+
+2. Navigate to the project directory:
+
+```bash
+cd Obstacle-Course-Racing-Game
+```
+
+3. Set up freeglut (this one is painful)
+   - Go to solution properties
+   - Click the symbol ‘v’ beside the ‘Platform’, choose ‘x64’
+  
+   - Click ‘VC++ Directories’ on the left side, then the symbol ‘v’ which is on the right side of ‘Include Directories’, and choose the ‘<Edit...>’ in the list. Press the ‘New Line’ button and choose the ‘include’ folder of the freeglut zip downloaded. Click the ‘OK’ button, to go back to the previous page.
+  
+   -  Click symbol ‘v’ on the right side of ‘Library Directories’ (blue arrow), and choose ‘<Edit...>’ in the list. Press the ‘New Line’ button (red arrow), and choose the ‘lib’ folder of the freeglut zip downloaded. Click the ‘OK’ button, to go back to the previous page.
+  
+   -  Click the symbol ‘>’ which is on the left side of ‘Linker’, and choose ‘Input’ in the list of ‘Linker’. Add the text "freeglut_static.lib;" into ‘Additional Dependencies’
+  
+   -  Click the ‘>’ symbol which is on the left side of ‘Manifest Tool’, and choose ‘Input and Output’ in the list of ‘Manifest Tool’; Set ’Embed Manifest’ to ‘No’; Click ‘OK’.
+
+
+<br>
+<b>Note:</b> If you are just curious about the game you can run the x64/Debug/Obstacle-Course-Racing-Game.exe file!
+
+   
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -84,6 +121,6 @@ Sonya's email address: snmmnva@gmail.com
 
 Project Link: [https://github.com/slooonya/Obstacle-Course-Racing-Game](https://github.com/slooonya/Obstacle-Course-Racing-Game)
 
-<img width="1680" height="200" alt="Footer" src="https://github.com/user-attachments/assets/609cec7d-aba1-4d3e-9131-75143515efbc" />
+<img width="1680" height="200" alt="Footer" src="https://github.com/user-attachments/assets/fcac2301-9e01-4f1f-b6a2-3c49c0fe8ff6" />
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
